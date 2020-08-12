@@ -40,11 +40,15 @@ namespace inventory {
     //% kind.shadow=spritekind
     export function pickupItems(source: Sprite, kind: number, distance: number = 16) {
         const sprites = getSpritesWithin(source.x, source.y, kind, distance)
-        const timeToPickup = distance * 10
+        const followSpeed = Math.max(Math.abs(source.vx), Math.abs(source.vy)) + 100
         sprites.forEach(s => {
             s.setFlag(SpriteFlag.Ghost, true);
-            s.follow(source);
+            s.follow(source, followSpeed);
+            const d = Math.sqrt(spriteDist2(source, s))
+            const timeToPickup = d * 10
             setTimeout(() => {
+                // TODO: once we can turn off wall collision but not sprite,
+                //  we should use sprite collision to detect when to pickup an item
                 pickupItem(source, s)
             }, timeToPickup)
         })
